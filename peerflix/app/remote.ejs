@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>peerflix server</title>
+  <meta name="description" content="peerflix server">
+  <meta name="viewport" content="width=device-width">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="robots" content="noarchive">
+  <link rel="shortcut icon" href="../images/eyes-on.png" type="image/x-icon">
+  <!-- build:css styles/vendor.css -->
+  <!-- bower:css -->
+  <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
+  <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css" />
+  <!-- endbower -->
+  <!-- endbuild -->
+  <!-- build:css({.tmp,app}) styles/main.css -->
+  <link rel="stylesheet" href="../styles/main.css">
+  <!-- endbuild -->
+  <script>
+    const joystickID = {
+        sessionID  : '<%= SID %>',
+        type: 'joystick',
+        maxStreams: NaN,
+        curStream : NaN        
+    }   
+    console.log(`PlayerID: ${JSON.stringify(joystickID)}`);
+
+    function playOnScreen(elem) {
+        const href = elem.href;
+        let action = false;
+        
+        elem.href = '';
+        fetch('/control/'+joystickID.sessionID, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    file: href,
+                    cmd: 'play',
+                })
+            })
+            .then((response) => {
+                console.log(response); 
+                elem.href = href;
+                if (response.status === 200) {
+                    document.querySelector("button.mode").disabled = false;
+                }
+            })
+            .catch((err) => {
+                console.log('Fetch Error :-S', err);
+            }); 
+
+        return action; 
+    }
+
+    function toggleModeOnScreen(elem) {
+
+        const cmd = elem.classList.contains('fa-pause') ? 'pause' : 'play'
+
+        fetch('/control/'+joystickID.sessionID, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    file: null,
+                    cmd: cmd,
+                })
+            })
+            .then((response) => {
+                console.log(response); 
+                if (response.status === 200) {
+                    if (cmd === 'pause') {
+                        elem.classList.remove('fa-pause');
+                        elem.classList.add('fa-play');                   
+                    } else {
+                        elem.classList.remove('fa-play');
+                        elem.classList.add('fa-pause');                     
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log('Fetch Error :-S', err);
+            });         
+    }
+/*
+    window.addEventListener('load', () => {
+        let lnks = document.querySelectorAll("a.ng-binding");
+        for (let i = 0; i < lnks.length; ++i) {
+            console.log(`${lnks[i].href}`);
+            //lnks[i].setAttribute("ng-click", "linkOnClick()");
+        }
+    })      
+      
+    window.addEventListener('beforeunload', () => {
+        fetch('/unpair/'+joystickID.sessionID)
+            .then((response) => {
+                console.log(response); 
+            })
+            .catch((err) => {
+                console.log('Fetch Error :-S', err);
+            }); 
+    })
+*/
+</script>
+</head>
+<body ng-app="peerflixServerApp">
+    <!-- Add your site or application content here -->
+    <div class="container" ng-view=""></div>
+
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-resource/angular-resource.js"></script>
+    <script src="../bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="../bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.compat.js"></script>
+    <script src="../bower_components/angular-socket-io/socket.js"></script>
+    <script src="../bower_components/ng-file-upload/angular-file-upload.js"></script>
+    <script src="../bower_components/push.js/push.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="../scripts/remote.js"></script>
+    <script src="../scripts/controllers/main.js"></script>
+    <script src="../scripts/services/torrent-socket.js"></script>
+    <!-- endbuild -->
+
+    <script src="/socket.io/socket.io.js"></script>
+</body>
+</html>

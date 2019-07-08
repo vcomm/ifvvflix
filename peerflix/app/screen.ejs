@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Torrent Stream Screen Player</title>
+    <link rel="shortcut icon" href="img/eyes-on.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+    html{
+        height: 100%;
+    }
+    body {
+        min-height: 100%;
+        margin: 0; 
+        overflow: hidden;
+    }
+    .container-fluid {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        width: 100%;
+    }
+    </style>
+    <script>
+    const playerID = {
+        sessionID  : '<%= SID %>',
+        QRCode : '<%= QRCode %>',
+        type: 'player'          
+    }    
+
+    function SubscribePane(elem, url) {
+
+        function playStream(stream) {
+            if (stream.cmd === "play") {
+                if (stream.file) elem.src =  stream.file
+                elem.play()
+            } else if (stream.cmd === "pause") {
+                elem.pause()
+            }
+        }
+
+        function subscribe() {
+            console.log(`Screen subcribe to control from remote: ${new Date()}`);
+            fetch(`${url}${playerID.sessionID}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then((response) => {
+                console.log(response); 
+                if (response.stream) 
+                    playStream(response.stream)
+                setTimeout(subscribe,1000);
+            })
+            .catch((err) => {
+                console.log('Fetch Error :-S', err);
+                setTimeout(subscribe,1000);
+            }); 
+        }
+        subscribe();
+    }
+
+    window.addEventListener('load', () => {
+        console.log(`SessionID: ${playerID.sessionID}`)
+        new SubscribePane(document.getElementById('player'), 'subscribe/');
+    })
+    </script>
+</head>
+<body>
+    <div class="container-fluid  d-flex flex-column area">
+        <!--<img src="<%= QRCode %>">-->
+        <video id="player" control autoplay poster="<%= QRCode %>" style="height:100%; width: 100%;"></video>
+        <!--<video controls autoplay loop src="/stream?src=cameras/View1" style="height:100%; width: 100%;"></video>-->
+    </div>
+</body>
+</html>

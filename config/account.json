@@ -1,0 +1,11 @@
+{
+    "server"  : "https://netifvv.herokuapp.com/",
+    "signup"  : "https://netifvv.herokuapp.com/enter",
+    "register": "proxy/registration",
+    "pingURI" : "proxy/ping/",
+    "authorization" : {
+        "name"  : "jopa",
+        "pswd"  : "jopa",
+        "uid"   : null
+    }  
+}

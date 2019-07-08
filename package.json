@@ -1,0 +1,26 @@
+{
+  "name": "ifvvflix",
+  "version": "1.0.0",
+  "description": "Deployment microservice set with pm2",
+  "main": "ecosystem.config.js",
+  "scripts": {
+    "monitor": "pm2 monit",
+    "start": "pm2 start pm2.json",
+    "stop": "pm2 kill",
+    "list": "pm2 ls",
+    "logs": "pm2 logs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vcomm/ifvvflix.git"
+  },
+  "author": "Yakov Liskoff",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vcomm/ifvvflix/issues"
+  },
+  "homepage": "https://github.com/vcomm/ifvvflix#readme",
+  "dependencies": {
+    "pm2": "^3.5.1"
+  }
+}
